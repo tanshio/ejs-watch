@@ -1,17 +1,25 @@
-var chokidar = require('chokidar');
-var ejs = require('ejs');
+const chokidar = require('chokidar')
+const ejs = require('ejs')
+const fs = require('fs')
+const yargs = require('yargs').argv;
 
+const default = {
+  obj: null,
+  output: '',
+  watch: false,
+}
 // One-liner for current directory, ignores .dotfies
-chokidar.watch('.', {ignored: /(^|[\/\\])\..|node_modules/}).on('all', (event, path) => {
-
+chokidar.watch('./test/test.ejs', {ignored: /(^|[\/\\])\..|node_modules/}).on('all', (event, path) => {
   console.log(event, path)
 
   const data = {}
-  options = {}
-  ejs.renderFile(path, data, options, function(err, str){
-    // str => Rendered HTML string
-    console.log(err);
-    console.log(str);
-  });
+  let options = {}
+  ejs.renderFile(path, data, options, (err, str) => {
+    if (err) throw err
+    fs.writeFile('./test/test.html', str, (err) => {
+      if (err) throw err
+      console.log('It\'s saved!')
+    })
+  })
 
-});
+})
